@@ -1,0 +1,10 @@
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+defineProps({ items: Array });
+const form = useForm({ id: null, nama_sumber: '', persentase_potongan_default: 0, apakah_platform: false, aktif: true });
+function submit() { if (form.id) form.put(`/master/sumber-order/${form.id}`); else form.post('/master/sumber-order', { onSuccess: reset }); }
+function edit(item) { form.id = item.id; form.nama_sumber = item.nama_sumber; form.persentase_potongan_default = item.persentase_potongan_default; form.apakah_platform = item.apakah_platform; form.aktif = item.aktif; }
+function reset() { form.reset(); }
+</script>
+<template><Head title="Sumber order"/><AuthenticatedLayout><template #header><h1 class="text-2xl font-semibold">Sumber order</h1></template><main class="mx-auto max-w-5xl space-y-6 px-4 py-8"><form @submit.prevent="submit" class="grid gap-3 rounded-2xl border bg-white p-5 sm:grid-cols-4"><input v-model="form.nama_sumber" required placeholder="Nama sumber" class="rounded-lg border-slate-300"/><input v-model="form.persentase_potongan_default" type="number" min="0" max="100" step="0.01" class="rounded-lg border-slate-300"/><label class="flex items-center gap-2 text-sm"><input v-model="form.apakah_platform" type="checkbox"/> Platform</label><div class="flex gap-2"><button class="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white">{{ form.id ? 'Simpan' : 'Tambah' }}</button><button v-if="form.id" type="button" @click="reset" class="text-sm">Batal</button></div></form><section class="overflow-hidden rounded-2xl border bg-white"><div v-for="item in items" :key="item.id" class="flex items-center justify-between border-b p-4 text-sm last:border-0"><span>{{ item.nama_sumber }} <span class="text-slate-400">{{ item.persentase_potongan_default }}% · {{ item.apakah_platform ? 'Platform' : 'Direct' }}</span></span><div class="flex gap-3"><button @click="edit(item)" class="text-blue-700">Edit</button><button @click="router.delete(`/master/sumber-order/${item.id}`)" class="text-rose-600">Arsip</button></div></div></section></main></AuthenticatedLayout></template>
